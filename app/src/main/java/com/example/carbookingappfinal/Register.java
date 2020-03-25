@@ -27,7 +27,6 @@ import org.w3c.dom.Document;
 
 import java.util.HashMap;
 import java.util.Map;
-
 public class Register extends AppCompatActivity {
     public static final String TAG = "TAG";
     EditText mFullName,mEmail,mPassword,mPhone;
@@ -38,10 +37,8 @@ public class Register extends AppCompatActivity {
     FirebaseFirestore fStore;
     String userID;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
@@ -70,8 +67,6 @@ public class Register extends AppCompatActivity {
                 final String fullName = mFullName.getText().toString();
                 final String phone    = mPhone.getText().toString();
 
-
-
                 if(TextUtils.isEmpty(email)){
                     mEmail.setError("Email is Required.");
                     return;
@@ -89,26 +84,30 @@ public class Register extends AppCompatActivity {
 
                 progressBar.setVisibility(View.VISIBLE);
 
+                // register the user in firebase
 
                 fAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
                             Toast.makeText(Register.this, "User Created.", Toast.LENGTH_SHORT).show();
-                            userID=fAuth.getCurrentUser().getUid();
-                            DocumentReference documentReference=fStore.collection("users").document(userID);
-                            Map<String,Object> user=new HashMap<>();
-                            user.put("fame",fullName);
+                            userID = fAuth.getCurrentUser().getUid();
+                            DocumentReference documentReference = fStore.collection("users").document(userID);
+                            Map<String,Object> user = new HashMap<>();
+                            user.put("fName",fullName);
+                            user.put("email",email);
                             user.put("phone",phone);
-                            user.put("e mail",email);
                             documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    Log.d(TAG,"on Success, profile is created for "+userID);
+                                    Log.d(TAG, "onSuccess: user Profile is created for "+ userID);
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.d(TAG, "onFailure: " + e.toString());
                                 }
                             });
-
-
                             startActivity(new Intent(getApplicationContext(),MainActivity.class));
 
                         }else {
@@ -128,8 +127,6 @@ public class Register extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(),Login.class));
             }
         });
-
-
 
     }
 }
