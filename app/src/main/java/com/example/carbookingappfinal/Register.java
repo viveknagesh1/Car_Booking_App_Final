@@ -23,6 +23,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.w3c.dom.Document;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,6 +95,19 @@ public class Register extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
                             Toast.makeText(Register.this, "User Created.", Toast.LENGTH_SHORT).show();
+                            userID=fAuth.getCurrentUser().getUid();
+                            DocumentReference documentReference=fStore.collection("users").document(userID);
+                            Map<String,Object> user=new HashMap<>();
+                            user.put("fame",fullName);
+                            user.put("phone",phone);
+                            user.put("e mail",email);
+                            documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d(TAG,"on Success, profile is created for "+userID);
+                                }
+                            });
+
 
                             startActivity(new Intent(getApplicationContext(),MainActivity.class));
 
