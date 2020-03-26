@@ -120,6 +120,7 @@ public class Login extends AppCompatActivity {
 
                     }
                 });
+                passwordResetBuilder.create().show();
             }
         });
 
